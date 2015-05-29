@@ -40,9 +40,11 @@ boot2docker start
 
 ```boot2docker ip``` in the shell (but VM needs to be shut down) or ```ifconfig``` in the boot2docker console.
 
+Most probably, the IP address is [192.168.59.103](http://192.168.59.103).
+
 ## Create an image from a Dockerfile
 
-We assume here in boot2docker because docker hub does the same remotely and automatically.
+We consider here a creation in boot2docker because docker hub does the same remotely and automatically.
 
 ### Share your project directory with Dockerfile at the root with boot2docker VM 
 
@@ -99,9 +101,12 @@ from the Dockerfile in the . (dot) directory. This assumes the command is launch
 ### Start/stop containers
 
 To start a container from an image that exposes port 3000, which we want to be mapped to port 49160,
-run ```docker run -p 49160:3000 -d <image name>[:<tag name>]```, like in ```docker run -p 49160:3000 -d jlchereau/hello```.
+run ```docker run -d -p 49160:3000 <image name>[:<tag name>]```, like in ```docker run -d -p 49160:3000 jlchereau/hello```.
 
 ```docker pull <image name>[:<tag name>]```, like in ```docker pull jlchereau/hello```,  pulls the image from the docker hub without running it.
+
+Environment variables can be declared as follows:
+```docker run -d -e "USERNAME=jimmy" -e "PASSWORD=bigsecret" -p 49160:3000 memba/memba-blog```
 
 Then assuming the ip address found here above is 192.168.59.103, the application exposed is accessible at http://192.168.59.103:49160.
 

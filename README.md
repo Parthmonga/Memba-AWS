@@ -1,4 +1,4 @@
-# Automatic Deployment of the Kidoju Platform on AWS
+# Automatic Deployment on AWS
 
 ## Introduction
 
