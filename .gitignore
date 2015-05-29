@@ -1,0 +1,16 @@
+# IntelliJ project files
+.idea/
+*.iml
+out
+gen
+
+# Files containing secret environment variables
+definitions/*.json
+
+# Key pairs
+*.pem
+*.ppk
+
+# Temp files
+temp/
+
