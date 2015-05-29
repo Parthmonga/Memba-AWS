@@ -1,6 +1,6 @@
-# boot2docker
+# boot2docker Cheat Sheet
 
-## installation
+## Installation
 
 Download from http://boot2docker.io/ and install.
 
@@ -20,13 +20,13 @@ Fix as follows (See https://github.com/boot2docker/boot2docker/issues/436):
 
 There is a nice tutorial how to run docker on Windows at http://blog.tutum.co/2014/11/05/how-to-use-docker-on-windows/.
 
-## help
+## Help
 
 ```docker``` lists all commands 
 
 ```docker <command> --help``` displays options for a specific command.
 
-## upgrade
+## Upgrade
 
 In a command shell:
 
@@ -36,11 +36,11 @@ boot2docker download
 boot2docker start
 ```
 
-## ip address
+## IP address
 
 ```boot2docker ip``` in the shell (but VM needs to be shut down) or ```ifconfig``` in the boot2docker console.
 
-## create an image from a Dockerfile
+## Create an image from a Dockerfile
 
 We assume here in boot2docker because docker hub does the same remotely and automatically.
 
@@ -82,13 +82,13 @@ from the Dockerfile in the . (dot) directory. This assumes the command is launch
 
 ```docker images``` should display your new image.
 
-## troubleshoot an image
+## Troubleshoot an image
 
 ```docker run -i -t <image name>[:<tag name>] /bin/bash``` launches a shell into the image.
 
-## container and image management
+## Container and image management
 
-### list containers and images
+### List containers and images
 
 ```docker ps``` lists running containers.
 
@@ -96,7 +96,7 @@ from the Dockerfile in the . (dot) directory. This assumes the command is launch
 
 ```docker images``` lists all images.
 
-### start/stop containers
+### Start/stop containers
 
 To start a container from an image that exposes port 3000, which we want to be mapped to port 49160,
 run ```docker run -p 49160:3000 -d <image name>[:<tag name>]```, like in ```docker run -p 49160:3000 -d jlchereau/hello```.
@@ -108,7 +108,7 @@ Then assuming the ip address found here above is 192.168.59.103, the application
 After checking the name of the container created from the image using ```docker ps```, ```docker stop <container name>``` and ```docker start <container name>```,
 like in ```docker stop stupefied_lumiere```, stops/starts the container.
 
-### remove containers and images
+### Remove containers and images
 
 ```docker rm <container name>```, like in ```docker rm stupefied_lumiere```, removes a container (the name can be found by running ```docker ps -all```).
 
