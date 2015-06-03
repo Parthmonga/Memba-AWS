@@ -16,7 +16,7 @@ SG_DESCRIPTION=$3
 SG_PORTS=$4
 
 # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-vpcs.html
-VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock=='$VPC_CIDR'].[VpcId][0][0]" --output text)
+VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock==`$VPC_CIDR`].[VpcId][0][0]" --output text)
 echo '>>>' $VPC_ID 'vpc found'
 
 if [ "$VPC_ID" == "None" ]
@@ -25,7 +25,7 @@ then
 else
 
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html
-    SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?VpcId=='$VPC_ID']|[?GroupName=='$SG_NAME'].[GroupId][0][0]" --output text)
+    SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?VpcId==`$VPC_ID`]|[?GroupName==`$SG_NAME`].[GroupId][0][0]" --output text)
     echo '>>>' $SG_ID 'security group found'
 
     if [ "$SG_ID" == "None" ]

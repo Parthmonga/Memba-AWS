@@ -1,4 +1,5 @@
 #!/bin/sh
+source ~/.bashrc
 
 echo '============================================================'
 echo '>>> delete deployment evironment'
@@ -20,13 +21,16 @@ CL_NAME=$ENVIRONMENT
 AS_NAME=$ENVIRONMENT"AutoScalingGroup"
 TD_KIDOJU_NAME="kidoju-task-definition"
 TD_MEMBA_NAME="memba-task-definition"
-SV_NAME=$ENVIRONMENT"Service"
+SV_KIDOJU_NAME=$ENVIRONMENT"Service"
+SV_MEMBA_NAME=$ENVIRONMENT"MembaService"
 
 # Delete service
-./delete-ecs-service.sh "$CL_NAME" "$SV_NAME"
+./commands/delete-ecs-service.sh "$CL_NAME" "$SV_KIDOJU_NAME"
+./commands/delete-ecs-service.sh "$CL_NAME" "$SV_MEMBA_NAME"
 
 # Delete task definition
-./commands/delete-ecs-task-definition.sh "$TD_NAME"
+./commands/delete-ecs-task-definition.sh "$TD_KIDOJU_NAME"
+./commands/delete-ecs-task-definition.sh "$TD_MEMBA_NAME"
 
 # Delete auto scaling group
 ./commands/delete-ec2-auto-scaling-group.sh "$AS_NAME"

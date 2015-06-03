@@ -13,7 +13,7 @@ fi
 ELB_NAME=$1
 
 # http://docs.aws.amazon.com/cli/latest/reference/elb/describe-load-balancers.html
-ELB_FOUND=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[?LoadBalancerName=='$ELB_NAME'].[LoadBalancerName][0][0]" --output text)
+ELB_FOUND=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[?LoadBalancerName==`$ELB_NAME`].[LoadBalancerName][0][0]" --output text)
 echo '>>>' $ELB_FOUND 'load balancer found'
 
 if [ "$ELB_FOUND" == "None" ]
@@ -22,7 +22,7 @@ then
 else
 
     # http://docs.aws.amazon.com/cli/latest/reference/elb/describe-load-balancers.html
-    SG_NAME=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[?LoadBalancerName=='$ELB_NAME'].[SourceSecurityGroup][0][0].GroupName" --output text)
+    SG_NAME=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[?LoadBalancerName==`$ELB_NAME`].[SourceSecurityGroup][0][0].GroupName" --output text)
     echo '>>>' $SG_NAME 'load balancer security group found'
 
     # http://docs.aws.amazon.com/cli/latest/reference/elb/delete-load-balancer.html
@@ -30,7 +30,7 @@ else
     echo '>>>' $ELB_NAME 'load balancer deleted'
 
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-network-interfaces.html
-    ATTACH_ID=$(aws ec2 describe-network-interfaces --query "NetworkInterfaces[?Groups[0].GroupName == '$SG_NAME'].[Attachment.AttachmentId][0][0]" --output text)
+    ATTACH_ID=$(aws ec2 describe-network-interfaces --query "NetworkInterfaces[?Groups[0].GroupName==`$SG_NAME`].[Attachment.AttachmentId][0][0]" --output text)
 
     # Note: we need to detach before we can delete
     if [ "$ATTACH_ID" != "None" ]
@@ -45,7 +45,7 @@ else
     sleep 5
 
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-network-interfaces.html
-    NIC_ID=$(aws ec2 describe-network-interfaces --query "NetworkInterfaces[?Groups[0].GroupName == '$SG_NAME'].[NetworkInterfaceId][0][0]" --output text)
+    NIC_ID=$(aws ec2 describe-network-interfaces --query "NetworkInterfaces[?Groups[0].GroupName==`$SG_NAME`].[NetworkInterfaceId][0][0]" --output text)
 
     # Note: If not deleted we won't be able to delete the corresponding security group
     if [ "$NIC_ID" != "None" ]

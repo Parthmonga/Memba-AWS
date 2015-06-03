@@ -1,4 +1,5 @@
 #!/bin/sh
+source ~/.bashrc
 
 echo '============================================================'
 echo '>>> create deployment evironment'
@@ -10,65 +11,102 @@ then
 fi
 
 ENVIRONMENT=$1
-
-# Create VPC, subnets and internet gateways
 VPC_CIDR=$2
 NET1_CIDR=$3
 NET2_CIDR=$4
 NET3_CIDR=$5
-./create-ec2-vpc.sh "$VPC_CIDR" "$NET1_CIDR" "$NET2_CIDR" "$NET3_CIDR"
+
+# Check region
+# http://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html
+RG_VALUE=$(aws configure get region --output text)
+if [ "$RG_VALUE" == "eu-west-1" ]
+then
+    RG_NAME="Ireland"
+    #LC_AMI_ID="ami-ed7c149a"
+    LC_AMI_ID="ami-b3543cc4" #ECS-Optimized Amason Linux AMI 2015.03b for eu-west-1 region
+elif [ "$RG_VALUE" == "us-east-1" ]
+then
+    RG_NAME="Virginia"
+    LC_AMI_ID="ami-d0b9acb8" #ECS-Optimized Amason Linux AMI 2015.03b for us-east-1 region
+else
+    echo '>>>' $RG_VALUE 'not configured in ./commands/environment-create.sh'
+    exit
+fi
+
+# Check users and groups
+
+# Check roles
+
+# Check key pair
+KP_NAME=$ENVIRONMENT$RG_NAME"KeyPair"
+./commands/check-ec2-key-pair.sh "$KP_NAME"
+
+# Check certificate
+CERT_NAME="kidojuSSLCertificate"
+CERT_CN="www.kidoju.com"
+./commands/check-iam-certificate.sh "$CERT_NAME" "$CERT_CN"
+
+# Create VPC, subnets and internet gateways
+./commands/create-ec2-vpc.sh "$VPC_CIDR" "$NET1_CIDR" "$NET2_CIDR" "$NET3_CIDR"
+
+SG_ELB_NAME=$ENVIRONMENT"ELBSecurityGroup"
+SG_ELB_DESCRIPTION="security group for load balancer in "$ENVIRONMENT" environment"
+SG_ELB_HTTP_PORT="80"
+SG_ELB_HTTPS_PORT="443"
+SG_ELB_PORTS="$SG_ELB_HTTP_PORT $SG_ELB_HTTPS_PORT"
+./commands/create-ec2-security-group.sh "$VPC_CIDR" "$SG_ELB_NAME" "$SG_ELB_DESCRIPTION" "$SG_ELB_PORTS"
 
 # Create security groups
 SG_EC2_NAME=$ENVIRONMENT"EC2SecurityGroup"
 SG_EC2_DESCRIPTION="security group for ec2 instances in "$ENVIRONMENT" environment"
-SG_EC2_PORTS="22 80 8080"
-./create-ec2-security-group.sh "$VPC_CIDR" "$SG_EC2_NAME" "$SG_EC2_DESCRIPTION" "$SG_EC2_PORTS"
-
-SG_ELB_NAME=$ENVIRONMENT"ELBSecurityGroup"
-SG_ELB_DESCRIPTION="security group for load balancer in "$ENVIRONMENT" environment"
-SG_ELB_PORTS="80 443"
-./create-ec2-security-group.sh "$VPC_CIDR" "$SG_ELB_NAME" "$SG_ELB_DESCRIPTION" "$SG_ELB_PORTS"
+SG_EC2_HTTP_PORT="80"
+SG_EC2_HTTPS_PORT="80" #"443"
+if [ "$SG_EC2_HTTP_PORT" == "$SG_EC2_HTTPS_PORT" ]
+then
+    SG_EC2_PORTS="22 $SG_EC2_HTTP_PORT"
+else
+    SG_EC2_PORTS="22 $SG_EC2_HTTP_PORT $SG_EC2_HTTPS_PORT"
+fi
+./commands/create-ec2-security-group.sh "$VPC_CIDR" "$SG_EC2_NAME" "$SG_EC2_DESCRIPTION" "$SG_EC2_PORTS"
 
 # Create load balancer
 ELB_NAME=$ENVIRONMENT"LoadBalancer"
-./create-ec2-load-balancer.sh "$VPC_CIDR" "$SG_ELB_NAME" "$ELB_NAME"
+./commands/create-ec2-load-balancer.sh "$VPC_CIDR" "$SG_ELB_NAME" "$ELB_NAME" "$SG_ELB_HTTP_PORT" "$SG_ELB_HTTPS_PORT" "$SG_EC2_HTTP_PORT" "$SG_EC2_HTTPS_PORT" "$CERT_NAME"
 
 # Create launch configuration
 LC_NAME=$ENVIRONMENT"LaunchConfiguration"
-LC_AMI_ID="ami-b3543cc4" #ECS-Optimized Amason Linux AMI 2015.03b
 LC_INST_TYPE="t2.micro"
-LC_KEY_PAIR=$ENVIRONMENT"IrelandKeyPair"
 LC_USER_DATA="file://./definitions/"$ENVIRONMENT"-user-data.sh"
-./create-ec2-launch-configuration.sh "$VPC_CIDR" "$SG_EC2_NAME" "$LC_NAME" "$LC_AMI_ID" "$LC_INST_TYPE" "$LC_KEY_PAIR" "$LC_USER_DATA"
+./commands/create-ec2-launch-configuration.sh "$VPC_CIDR" "$SG_EC2_NAME" "$LC_NAME" "$LC_AMI_ID" "$LC_INST_TYPE" "$KP_NAME" "$LC_USER_DATA"
 
 # Create cluster
 CL_NAME=$ENVIRONMENT
-./create-ecs-cluster.sh "$CL_NAME"
+./commands/create-ecs-cluster.sh "$CL_NAME"
 
 # Create auto scaling group
 AS_NAME=$ENVIRONMENT"AutoScalingGroup"
 AS_MIN=1
 AS_MAX=2
 AS_DESIRED=1
-./create-ec2-auto-scaling-group.sh "$VPC_CIDR" "$ELB_NAME" "$LC_NAME" "$AS_NAME" "$AS_MIN" "$AS_MAX" "$AS_DESIRED"
+./commands/create-ec2-auto-scaling-group.sh "$VPC_CIDR" "$ELB_NAME" "$LC_NAME" "$AS_NAME" "$AS_MIN" "$AS_MAX" "$AS_DESIRED"
 
-# Create task definitionw
+# Create task definitions
 TD_KIDOJU_NAME="kidoju-task-definition"
 TD_KIDOJU_JSON="file://./definitions/kidoju-task-definition.json"
-#./create-ecs-task-definition.sh "$TD_KIDOJU_NAME" "$TD_KDOJU_JSON"
+./commands/create-ecs-task-definition.sh "$TD_KIDOJU_NAME" "$TD_KIDOJU_JSON"
 
-TD_MEMBA_NAME="memba-task-definition"
-TD_MEMBA_JSON="file://./definitions/memba-task-definition.json"
-#./create-ecs-task-definition.sh "$TD_MEMBA_NAME" "$TD_MEMBA_JSON"
+#TD_MEMBA_NAME="memba-task-definition"
+#TD_MEMBA_JSON="file://./definitions/memba-task-definition.json"
+#./commands/create-ecs-task-definition.sh "$TD_MEMBA_NAME" "$TD_MEMBA_JSON"
 
 # Create services
 SV_DESIRED=$AS_DESIRED
 SV_ROLE="ecsServiceRole"
 
 SV_KIDOJU_NAME=$ENVIRONMENT"KidojuService"
-SV_KIDOJU_ELB="loadBalancerName="$ELB_NAME",containerName=Kidoju-Blog,containerPort=3000"
-./create-ecs-service.sh "$CL_NAME" "$TD_NAME" "$SV_KIDOJU_NAME" "$SV_KIDOJU_ELB" "$SV_DESIRED" "$SV_ROLE"
+SV_KIDOJU_ELB="loadBalancerName="$ELB_NAME",containerName=memba-nginx,containerPort=80" #443"
+./commands/create-ecs-service.sh "$CL_NAME" "$TD_KIDOJU_NAME" "$SV_KIDOJU_NAME" "$SV_KIDOJU_ELB" "$SV_DESIRED" "$SV_ROLE"
 
-SV_MEMBA_NAME=$ENVIRONMENT"MembaService"
-SV_MEMBA_ELB="loadBalancerName="$ELB_NAME",containerName=Memba-Blog,containerPort=3000"
-./create-ecs-service.sh "$CL_NAME" "$TD_NAME" "$SV_MEMBA_NAME" "$SV_MEMBA_ELB" "$SV_DESIRED" "$SV_ROLE"
+#SV_MEMBA_NAME=$ENVIRONMENT"MembaService"
+#SV_MEMBA_ELB="loadBalancerName="$ELB_NAME",containerName=memba-nginx,containerPort=80"
+#./commands/create-ecs-service.sh "$CL_NAME" "$TD_MEMBA_NAME" "$SV_MEMBA_NAME" "$SV_MEMBA_ELB" "$SV_DESIRED" "$SV_ROLE"

@@ -19,7 +19,7 @@ AS_MAX=$6
 AS_DESIRED=$7
 
 # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-vpcs.html
-VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock=='$VPC_CIDR'].[VpcId][0][0]" --output text)
+VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock==`$VPC_CIDR`].[VpcId][0][0]" --output text)
 echo '>>>' $VPC_ID 'vpc found'
 
 if [ "$VPC_ID" == "None" ]
@@ -35,7 +35,7 @@ else
     then
 
         # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-subnets.html
-        VPC_SUBNETS=$(aws ec2 describe-subnets --query "Subnets[?VpcId=='$VPC_ID'].[SubnetId][]" --output text)
+        VPC_SUBNETS=$(aws ec2 describe-subnets --query "Subnets[?VpcId==`$VPC_ID`].[SubnetId][]" --output text)
         # replace tabs with commas
         VPC_SUBNETS=${VPC_SUBNETS//[$'\t']/,}
         echo '>>>' $VPC_SUBNETS 'subnets found'

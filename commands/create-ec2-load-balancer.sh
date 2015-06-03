@@ -26,7 +26,7 @@ CERT_ID=$(aws iam get-server-certificate --server-certificate-name "kidojuSSLCer
 ELB_HTTPS_LISTENER="Protocol=HTTPS,LoadBalancerPort="$ELB_HTTPS_PORT",InstanceProtocol=HTTP,InstancePort="$EC2_HTTPS_PORT",SSLCertificateId="$CERT_ID
 
 # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-vpcs.html
-VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock=='$VPC_CIDR'].[VpcId][0][0]" --output text)
+VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock==`$VPC_CIDR`].[VpcId][0][0]" --output text)
 echo '>>>' $VPC_ID 'vpc found'
 
 if [ "$VPC_ID" == "None" ]
@@ -35,11 +35,11 @@ then
 else
 
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-subnets.html
-    VPC_SUBNETS=$(aws ec2 describe-subnets --query "Subnets[?VpcId=='$VPC_ID'].[SubnetId][]" --output text)
+    VPC_SUBNETS=$(aws ec2 describe-subnets --query "Subnets[?VpcId==`$VPC_ID`].[SubnetId][]" --output text)
     echo '>>>' $VPC_SUBNETS 'subnets found'
 
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html
-    SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?VpcId=='$VPC_ID']|[?GroupName=='$SG_ELB_NAME'].[GroupId][0][0]" --output text)
+    SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?VpcId==`$VPC_ID`]|[?GroupName==`$SG_ELB_NAME`].[GroupId][0][0]" --output text)
 
     if [ "$SG_ID" == "None" ]
     then
@@ -47,7 +47,7 @@ else
     else
 
         # http://docs.aws.amazon.com/cli/latest/reference/elb/describe-load-balancers.html
-        ELB_FOUND=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[?LoadBalancerName=='$ELB_NAME'].[LoadBalancerName][0][0]" --output text)
+        ELB_FOUND=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[?LoadBalancerName==`$ELB_NAME`].[LoadBalancerName][0][0]" --output text)
         echo '>>>' $ELB_FOUND 'load balancer found'
 
         if [ "$ELB_FOUND" == "None" ]
