@@ -113,6 +113,12 @@ Then assuming the ip address found here above is 192.168.59.103, the application
 After checking the name of the container created from the image using ```docker ps```, ```docker stop <container name>``` and ```docker start <container name>```,
 like in ```docker stop stupefied_lumiere```, stops/starts the container.
 
+### Link containers
+
+Start the source container (for example a web application) with a name as in ```docker run -d -P --name memba-blog-1 memba/memba-blog```.
+
+Start the destination container (for example a reverse proxy) with a link to the source as in ```docker run -d -p 80:80 --link memba-blog-1:memba-blog-1 memba/memba-nginx```
+
 ### Remove containers and images
 
 ```docker rm <container name>```, like in ```docker rm stupefied_lumiere```, removes a container (the name can be found by running ```docker ps -all```).
@@ -120,3 +126,37 @@ like in ```docker stop stupefied_lumiere```, stops/starts the container.
 ```docker rmi <image name>[:<tag name>]```, like in ```docker rm jlchereau/hello``` or ```docker rm jlchereau/hello:latest```, removes an image.
 
 To remove untagged images (<none> tag) from your Docker host, see http://jimhoskins.com/2013/07/27/remove-untagged-docker-images.html.
+
+## Testing in boot2docker
+
+In boot2docker...
+
+### www.memba.com
+
+Run command ```docker run -d -P --name memba-blog-1 memba/memba-blog``` to launch.
+Check with ```docker ps```.
+
+### www.kidoju.com
+
+Run command ```docker run -d -P --name kidoju-blog-1 kidoju/kidoju-blog``` to launch.
+Check with ```docker ps```.
+
+### nginx proxy
+
+Run command ```docker run -d -p 80:80 --link memba-blog-1:memba-blog-1 --link kidoju-blog-1:kidoju-blog-1 memba/memba-nginx```
+
+### Test
+
+Edit ```C:\Windows\System32\drivers\etc\hosts``` and add the following entries:
+
+```
+192.168.59.103  www.memba.com
+192.168.59.103  www.kidoju.com
+192.168.59.103  www.dummy.com
+```
+
+Then:
+
+- http://www.memba.com should display the memba web site
+- http://www.kidoju.com should redirect permanently to https://www.kidoju.com which should display an ERR_CONNECTION_REFUSED (nginx proxy is not configured to respond on port 443)
+- http://www.dummy.com should be redirected permanently to http://www.memba.com
