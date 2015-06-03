@@ -117,7 +117,7 @@ like in ```docker stop stupefied_lumiere```, stops/starts the container.
 
 Start the source container (for example a web application) with a name as in ```docker run -d --name memba-blog-1 memba/memba-blog```.
 
-Start the destination container (for example a reverse proxy) with a link to the source as in ```docker run -d -p 80:80 --link memba-blog-1:memba-blog-1 memba/memba-nginx```
+Start the destination container (for example a reverse proxy) with a link to the source as in ```docker run -d -p 80:80 --link memba-blog-1:memba-blog-1 memba/nginx-proxy```
 
 ### Remove containers and images
 
@@ -143,7 +143,7 @@ Check with ```docker ps```.
 
 ### nginx proxy
 
-Run command ```docker run -d -p 80:80 --link memba-blog-1:memba-blog-1 --link kidoju-blog-1:kidoju-blog-1 memba/memba-nginx```
+Run command ```docker run -d -p 80:80 --link memba-blog-1:memba-blog-1 --link kidoju-blog-1:kidoju-blog-1 memba/nginx-proxy```
 
 ### Test
 
