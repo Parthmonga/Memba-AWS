@@ -4,8 +4,8 @@
 out
 gen
 
-# Files containing secret environment variables
-definitions/*.json
+# Files containing secret variables
+definitions/
 
 # SSL certificates
 certificates/
@@ -13,6 +13,7 @@ certificates/
 # Key pairs
 *.pem
 *.ppk
+*.cert
 
 # Temp files
 temp/
