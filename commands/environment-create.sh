@@ -77,11 +77,14 @@ ELB_NAME=$ENVIRONMENT"LoadBalancer"
 # Create launch configuration
 LC_NAME=$ENVIRONMENT"LaunchConfiguration"
 LC_INST_TYPE="t2.micro"
-LC_USER_DATA="file://./definitions/"$ENVIRONMENT"-user-data.sh"
+LC_USER_FILE="./definitions/"$ENVIRONMENT"-user-data.sh"
+LC_USER_DATA="file://"$LC_USER_FILE
+CL_NAME=$ENVIRONMENT
+sed -e "s/{{CL_NAME}}/$CL_NAME/" ./templates/user-data.sh > "$LC_USER_FILE"
 ./commands/create-ec2-launch-configuration.sh "$VPC_CIDR" "$SG_EC2_NAME" "$LC_NAME" "$LC_AMI_ID" "$LC_INST_TYPE" "$KP_NAME" "$LC_USER_DATA"
 
 # Create cluster
-CL_NAME=$ENVIRONMENT
+# CL_NAME=$ENVIRONMENT
 ./commands/create-ecs-cluster.sh "$CL_NAME"
 
 # Create auto scaling group
