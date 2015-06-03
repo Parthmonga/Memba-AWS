@@ -115,7 +115,7 @@ like in ```docker stop stupefied_lumiere```, stops/starts the container.
 
 ### Link containers
 
-Start the source container (for example a web application) with a name as in ```docker run -d -P --name memba-blog-1 memba/memba-blog```.
+Start the source container (for example a web application) with a name as in ```docker run -d --name memba-blog-1 memba/memba-blog```.
 
 Start the destination container (for example a reverse proxy) with a link to the source as in ```docker run -d -p 80:80 --link memba-blog-1:memba-blog-1 memba/memba-nginx```
 
@@ -133,12 +133,12 @@ In boot2docker...
 
 ### www.memba.com
 
-Run command ```docker run -d -P --name memba-blog-1 memba/memba-blog``` to launch.
+Run command ```docker run -d --name memba-blog-1 memba/memba-blog``` to launch.
 Check with ```docker ps```.
 
 ### www.kidoju.com
 
-Run command ```docker run -d -P --name kidoju-blog-1 kidoju/kidoju-blog``` to launch.
+Run command ```docker run -d --name kidoju-blog-1 kidoju/kidoju-blog``` to launch.
 Check with ```docker ps```.
 
 ### nginx proxy
