@@ -18,7 +18,7 @@ then
     echo '>>> WARNING: You have' $COUNT 'key pairs'
 fi
 
-KEY_FOUND=$(aws ec2 describe-key-pairs --query "KeyPairs[?KeyName==`$KEY_NAME`].KeyName" --output text)
+KEY_FOUND=$(aws ec2 describe-key-pairs --query "KeyPairs[?KeyName=='$KEY_NAME'].KeyName" --output text)
 if [ -z KEY_FOUND ]
 then
      echo '>>>' $KEY_NAME 'not found'

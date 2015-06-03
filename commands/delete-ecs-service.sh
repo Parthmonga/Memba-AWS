@@ -14,8 +14,8 @@ CL_NAME=$1
 SV_NAME=$2
 
 # http://docs.aws.amazon.com/cli/latest/reference/ecs/describe-services.html
-SV_FOUND=$(aws ecs describe-services --cluster "$CL_NAME" --services "$SV_NAME" --query "services[?serviceName==`$SV_NAME`].[serviceName][0][0]" --output text)
-SV_STATUS=$(aws ecs describe-services --cluster "$CL_NAME" --services "$SV_NAME" --query "services[?serviceName==`$SV_NAME`].[status][0][0]" --output text)
+SV_FOUND=$(aws ecs describe-services --cluster "$CL_NAME" --services "$SV_NAME" --query "services[?serviceName=='$SV_NAME'].[serviceName][0][0]" --output text)
+SV_STATUS=$(aws ecs describe-services --cluster "$CL_NAME" --services "$SV_NAME" --query "services[?serviceName=='$SV_NAME'].[status][0][0]" --output text)
 if [ "$SV_STATUS" != "ACTIVE" ]
 then
     SV_FOUND="None"

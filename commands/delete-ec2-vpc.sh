@@ -14,7 +14,7 @@ VPC_CIDR=$1
 echo '>>> deleting vpc' $VPC_CIDR
 
 # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-vpcs.html
-VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock==`$VPC_CIDR`].[VpcId][0][0]" --output text)
+VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock=='$VPC_CIDR'].[VpcId][0][0]" --output text)
 echo '>>>' $VPC_ID 'vpc found'
 
 if [ "$VPC_ID" == "None" ]
@@ -24,7 +24,7 @@ else
 
     # TODO this script only works with one attachment only between gateway and vpc
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-internet-gateways.html
-    IGW_ID=$(aws ec2 describe-internet-gateways --query "InternetGateways[].{ InternetGatewayId: InternetGatewayId, VpcId: Attachments[0].VpcId } | [?VpcId==`$VPC_ID`].[InternetGatewayId][0][0]" --output text)
+    IGW_ID=$(aws ec2 describe-internet-gateways --query "InternetGateways[].{ InternetGatewayId: InternetGatewayId, VpcId: Attachments[0].VpcId } | [?VpcId=='$VPC_ID'].[InternetGatewayId][0][0]" --output text)
 
     if [ "$IGW_ID" == "None" ]
     then
@@ -47,7 +47,7 @@ else
     sleep 1
 
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-subnets.html
-    VPC_SUBNETS=$(aws ec2 describe-subnets --query "Subnets[?VpcId==`$VPC_ID`].[SubnetId][]" --output text)
+    VPC_SUBNETS=$(aws ec2 describe-subnets --query "Subnets[?VpcId=='$VPC_ID'].[SubnetId][]" --output text)
     echo '>>>' $VPC_SUBNETS 'subnets found'
 
     for SUBNET_ID in $VPC_SUBNETS

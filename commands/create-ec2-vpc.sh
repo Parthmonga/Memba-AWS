@@ -17,7 +17,7 @@ NET3_CIDR=$4
 echo '>>> creating vpc' $VPC_CIDR 'with subnets' $NET1_CIDR $NET2_CIDR $NET3_CIDR
 
 # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-vpcs.html
-VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock==`$VPC_CIDR`].[VpcId][0][0]" --output text)
+VPC_ID=$(aws ec2 describe-vpcs --query "Vpcs[?CidrBlock=='$VPC_CIDR'].[VpcId][0][0]" --output text)
 echo '>>>' $VPC_ID 'vpc found'
 
 if [ "$VPC_ID" == "None" ]
@@ -55,7 +55,7 @@ then
     echo '>>>' $IGW_ID 'internet gateway attached to vpc' $VPC_ID
 
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-route-tables.html
-    RT_ID=$(aws ec2 describe-route-tables --query "RouteTables[?VpcId ==`$VPC_ID`].[RouteTableId][0][0]" --output text)
+    RT_ID=$(aws ec2 describe-route-tables --query "RouteTables[?VpcId =='$VPC_ID'].[RouteTableId][0][0]" --output text)
     echo '>>>' $RT_ID 'route table found'
 
     # http://docs.aws.amazon.com/cli/latest/reference/ec2/create-route.html
