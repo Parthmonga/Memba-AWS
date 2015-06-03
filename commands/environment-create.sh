@@ -91,23 +91,14 @@ AS_MAX=2
 AS_DESIRED=1
 ./commands/create-ec2-auto-scaling-group.sh "$VPC_CIDR" "$ELB_NAME" "$LC_NAME" "$AS_NAME" "$AS_MIN" "$AS_MAX" "$AS_DESIRED"
 
-# Create task definitions
-TD_KIDOJU_NAME="kidoju-task-definition"
-TD_KIDOJU_JSON="file://./definitions/kidoju-task-definition.json"
-./commands/create-ecs-task-definition.sh "$TD_KIDOJU_NAME" "$TD_KIDOJU_JSON"
+# Create task definition
+TD_NAME="kidoju-task-definition"
+TD_JSON="file://./definitions/kidoju-task-definition.json"
+./commands/create-ecs-task-definition.sh "$TD_NAME" "$TD_JSON"
 
-#TD_MEMBA_NAME="memba-task-definition"
-#TD_MEMBA_JSON="file://./definitions/memba-task-definition.json"
-#./commands/create-ecs-task-definition.sh "$TD_MEMBA_NAME" "$TD_MEMBA_JSON"
-
-# Create services
+# Create service
 SV_DESIRED=$AS_DESIRED
 SV_ROLE="ecsServiceRole"
-
-SV_KIDOJU_NAME=$ENVIRONMENT"KidojuService"
-SV_KIDOJU_ELB="loadBalancerName="$ELB_NAME",containerName=nginx-proxy,containerPort=80" #443"
-./commands/create-ecs-service.sh "$CL_NAME" "$TD_KIDOJU_NAME" "$SV_KIDOJU_NAME" "$SV_KIDOJU_ELB" "$SV_DESIRED" "$SV_ROLE"
-
-#SV_MEMBA_NAME=$ENVIRONMENT"MembaService"
-#SV_MEMBA_ELB="loadBalancerName="$ELB_NAME",containerName=nginx-proxy,containerPort=80"
-#./commands/create-ecs-service.sh "$CL_NAME" "$TD_MEMBA_NAME" "$SV_MEMBA_NAME" "$SV_MEMBA_ELB" "$SV_DESIRED" "$SV_ROLE"
+SV_NAME=$ENVIRONMENT"Service"
+SV_ELB="loadBalancerName="$ELB_NAME",containerName=nginx-proxy,containerPort=80"
+./commands/create-ecs-service.sh "$CL_NAME" "$TD_NAME" "$SV_NAME" "$SV_ELB" "$SV_DESIRED" "$SV_ROLE"
