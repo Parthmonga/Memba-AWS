@@ -17,19 +17,20 @@ NET2_CIDR=$4
 NET3_CIDR=$5
 
 # Check region
-# http://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html
+# http://docs.aws.amazon.com/cli/latest/reference/configure/get.html
 RG_VALUE=$(aws configure get region --output text)
 if [ "$RG_VALUE" == "eu-west-1" ]
 then
     RG_NAME="Ireland"
-    #LC_AMI_ID="ami-ed7c149a"
-    LC_AMI_ID="ami-b3543cc4" #ECS-Optimized Amason Linux AMI 2015.03b for eu-west-1 region
+    # http://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html
+    # LC_AMI_ID="ami-ed7c149a"
+    LC_AMI_ID="ami-b3543cc4" # ECS-Optimized Amason Linux AMI 2015.03b for eu-west-1 region
 elif [ "$RG_VALUE" == "us-east-1" ]
 then
     RG_NAME="Virginia"
-    LC_AMI_ID="ami-d0b9acb8" #ECS-Optimized Amason Linux AMI 2015.03b for us-east-1 region
+    LC_AMI_ID="ami-d0b9acb8" # ECS-Optimized Amason Linux AMI 2015.03b for us-east-1 region
 else
-    echo '>>>' $RG_VALUE 'not configured in ./commands/environment-create.sh'
+    echo '>>>' $RG_VALUE 'not handled in ./commands/environment-create.sh'
     exit
 fi
 
