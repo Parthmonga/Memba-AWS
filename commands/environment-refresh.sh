@@ -2,7 +2,7 @@
 source ~/.bashrc
 
 echo '------------------------------------------------------------'
-echo '>>> environment application update'
+echo '>>> environment application refresh'
 
 if [ $# -lt 2 ]
 then
@@ -42,6 +42,7 @@ else
        echo '>>>' $SV_NAME 'has a running count of' $AS_RUNNING
     done
 
+    sleep 5
     SV_UPDATED=$(aws ecs update-service --cluster "$CL_NAME" --service "$SV_NAME" --desired-count "$AS_DESIRED" --query "service.serviceName" --output text)
     echo '>>>' $SV_UPDATED 'service restarted'
 
