@@ -14,9 +14,9 @@ Actually what needs to be done in the AWS console to achive the same is:
 8. Enter a **Number of tasks** of 1 and click **Update Service** (bottom right)
 9. Wait until the running count reaches 1 (refresh periodically)
 
-If images are tagged in the task definition, the same image is reloaded.
+If images are tagged in the task definition, the same images are reloaded.
 
-If images are not tagged in the task definition, ```docker run``` will pull the latest image from docker hub, thus reloading the service with most recent changes.
+If any image is not tagged in the task definition, ```docker run``` will pull the latest image from docker hub, thus reloading the service with most recent changes.
 
 # Automated Refresh
 

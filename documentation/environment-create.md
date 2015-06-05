@@ -1,32 +1,32 @@
 # Manual Setup
 
-We are following the instructions from the [Amazon EC2 Container Service Developer Guide](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-dg.pdf).
+Follow the instructions from the [Amazon EC2 Container Service Developer Guide](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-dg.pdf).
 
 ## IAM users and roles (pages 4-5)
 
-For now, this is managed in the AWS console.
+Run the AWS console.
 
-We have created 3 groups:
+Create 3 groups:
 
 - **SysAdmins** have Administrators privileges.
 - **SysOpArchitects** have Power User privileges. TODO: limit privileges to the minimum required to setup a production environment.
 - **SysOpOperators** has no privileges. TODO: limit privileges to the minimum required to upgrade and maintain a production environment.
 
-We have also created 2 roles:
+Create 2 roles as described in pages 4 to 5 of the [Amazon EC2 Container Service Developer Guide](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-dg.pdf):
 
 - **ecsInstanceRole**
 - **ecsServiceRole**
 
 ## Key Pair (pages 5-7)
 
-We have created a single keyPair named **productionIrelandKeyPair**.
+Create a single keyPair named ```production<Region>KeyPair```. We have created **productionIrelandKeyPair**
 
 ## Virtual Private Cloud (pages 7-8)
 
-We have added **productionIrelandVPC** to the default VPC based on option **VPC with a Single Public Subnet** in the **Start VPC Wizard**.
+Add **productionVPC** to the default VPC based on option **VPC with a Single Public Subnet** in the **Start VPC Wizard**.
 
-Note : in the future, we might want to select **VPC with Public and Private Subnets** to isolate our MongoDB database.
-Note: Private address spaces (CIDR) are defined at https://tools.ietf.org/html/rfc1918
+*Note: in the future, we might want to select **VPC with Public and Private Subnets** to isolate our MongoDB database.*
+*Note: Private address spaces (CIDR) are defined at https://tools.ietf.org/html/rfc1918*
 
 ## Security Group (pages 8-10)
 
