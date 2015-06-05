@@ -133,13 +133,18 @@ In boot2docker...
 
 ### www.memba.com
 
-Run command ```docker run -d --name memba-blog-1 memba/memba-blog``` to launch.
+To run as a standalone container, execute command ```docker run -d -p 80:3000 -e "NODE_ENV=production" -e "TOKEN=xxxxxxxxxxxxxxxxxxxxxxx" memba/memba-blog```
+where TOKEN is a [Github personal access token](https://github.com/settings/tokens).
+
+To run behind nginx proxy, execute command ```docker run -d -e "NODE_ENV=production" -e "TOKEN=xxxxxxxxxxxxxxxxxxxxxxx" --name memba-blog-1 memba/memba-blog```.
 Check with ```docker ps```.
 
 ### www.kidoju.com
 
-Run command ```docker run -d --name kidoju-blog-1 kidoju/kidoju-blog``` to launch.
-Check with ```docker ps```.
+Run command ```docker run -d -e "NODE_ENV=production" -e "TOKEN=xxxxxxxxxxxxxxxxxxxxxxx" --name kidoju-blog-1 kidoju/kidoju-blog``` to launch.
+TOKEN is a Github personal token. Check with ```docker ps```.
+
+kidoju-blog requires SSL since https://www.kidoju.com is configured as root in config/production.json.
 
 ### nginx proxy
 
@@ -152,8 +157,10 @@ Edit ```C:\Windows\System32\drivers\etc\hosts``` and add the following entries:
 ```
 192.168.59.103  www.memba.com
 192.168.59.103  www.kidoju.com
-192.168.59.103  www.dummy.com
+192.168.59.103  www.dummy.com (to test permanent redirection in nginx-proxy)
 ```
+
+A reindexation can be triggered using ```curl -X POST -A "GitHub-Hookshot/abcde" http://www.memba.com/hook```.
 
 Then:
 
